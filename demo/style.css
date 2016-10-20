@@ -1,0 +1,10 @@
+body{
+    padding: 0;
+    margin: 0;
+}
+#revealContainer{
+    overflow: hidden;
+}
+img{
+    width: 100%;
+}

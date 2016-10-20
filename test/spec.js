@@ -3,8 +3,8 @@
 (function () {
   'use strict';
 
-  test('Library answer questions with YO!', function () {
-    ok(revealjs('Should I tickle this unicorn?') === 'YO!', 'Passed!');
+  test('Library Exists', function () {
+    ok(revealjs);
   });
 
 }());

@@ -49,11 +49,13 @@ module.exports = function(grunt) {
       lib_test: {
         files: '<%= jshint.lib_test.src %>',
         tasks: ['jshint:lib_test', 'qunit']
+      },
+      build:{
+          files: '<%= jshint.lib_test.src %>',
+          tasks: ['jshint:lib_test', 'qunit', 'concat', 'uglify']
       }
     }
   });
-
-  
 
   // Default task.
   grunt.registerTask('default', ['qunit', 'concat', 'uglify']);
