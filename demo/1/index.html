@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RevealJS</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+<div id="revealContainer">
+    <video>
+        <source src="ink09.webm" type="video/webm">
+    </video>
+    <img src="nice2.jpg">
+</div>
+<script src="../../dist/revealjs.v0.1.0.js"></script>
+<script>
+    var playme = revealjs('revealContainer', {
+
+        videoPlaybackRate: 1,
+        timeout: 1000
+    });
+</script>
+</body>
+</html>
