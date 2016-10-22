@@ -1,4 +1,4 @@
-/*! revealjs - v0.1.0 - 2016-10-20
+/*! revealjs - v0.1.0 - 2016-10-22
 * http://www.youtube.com/watch?v=cDuG95DXbw8
 * Copyright (c) 2016 Obi-Wan Kenobi; Licensed  */
 // Uses AMD or browser globals to create a module.
@@ -33,6 +33,7 @@
      * @param {Object} options User options
      * @returns {Object} Merged values of defaults and options
      */
+
     var requestAnimationFrame = window.requestAnimationFrame       ||
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame    ||
@@ -221,6 +222,8 @@
         parent.appendChild(canvasLayerVisible.canvas);
 
         var animationFrameId;
+        var rgbTransArray = options.transparentColor.split(/[\(\)]+/)[1].split(',').map(Number);
+        console.log(rgbTransArray, options.transparentColor);
         var render = function () {
             if (typeof options.videoCutoff === 'undefined') {
                 options.videoCutoff = videoNode.duration - 0.50;
@@ -248,8 +251,9 @@
 
                 imageData[i + 3] = colorToAlpha(r, g, b);
                 if (options.transparent) {
-                    var pixelRGB = "rgb(" + imageData[i] + "," + imageData[i + 1] + "," + imageData[i + 2] + ")";
-                    if (pixelRGB === options.transparentColor) {
+                    if (imageData[i] === rgbTransArray[0] &&
+                        imageData[i + 1] === rgbTransArray[1] &&
+                        imageData[i + 2] === rgbTransArray[2]) {
                         imageData[i + 3] = 0;
                     }
                 }
@@ -259,7 +263,6 @@
             canvasLayerImage.context.putImageData(imageIdata, 0, 0);
             canvasLayerVisible.context.clearRect(0, 0, width, height);
             canvasLayerVisible.context.drawImage(canvasLayerImage.canvas, 0, 0);
-            //canvasLayerVisible.context.drawImage(canvasLayerVideo.canvas, 0, 0);
             requestAnimationFrame(render);
         };
         var initialize = function () {
@@ -271,7 +274,7 @@
             var imageBox = imageNode.getBoundingClientRect();
             width = parentBox.width;
             height = parentBox.height;
-            console.log(imageBox);
+
 
             canvasLayerVisible.canvas.width = imageBox.width;
             canvasLayerVisible.canvas.height = imageBox.height;
@@ -318,6 +321,7 @@
         videoNode.addEventListener('play', function () {
             requestAnimationFrame(render);
         });
+
         if (!imageClone.complete) {
             imageClone.addEventListener('load', function () {
                 initialize();
