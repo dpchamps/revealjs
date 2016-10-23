@@ -7,7 +7,7 @@
 </head>
 <body>
 <div id="revealContainer">
-    <video>
+    <video autoplay>
         <source src="ink04.webm" type="video/webm">
     </video>
     <img src="headerimage.png">
@@ -19,8 +19,8 @@
             var container = document.getElementById('revealContainer');
             var playme = revealjs(container, {
                 transparent: true,
-                videoPlaybackRate: 1,
-                videoCutoff: 4.5,
+                transparentColor: "rgb(100,100,100)",
+                videoPlaybackRate: 1.8,
                 timeout: 500
             });
     });

@@ -1,4 +1,4 @@
-/*! revealjs - v0.1.0 - 2016-10-22
+/*! revealjs - v0.1.0 - 2016-10-23
 * http://www.youtube.com/watch?v=cDuG95DXbw8
 * Copyright (c) 2016 Obi-Wan Kenobi; Licensed  */
 // Uses AMD or browser globals to create a module.
@@ -25,6 +25,33 @@
     }
 }(this, function () {
     'use strict';
+
+
+    var lastTime = 0;
+    var vendors = ['webkit', 'moz'];
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame =
+            window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function (callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function () {
+                    callback(currTime + timeToCall);
+                },
+                timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+    }
+    if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function (id) {
+            clearTimeout(id);
+        };
+    }
     /**
      * https://gist.github.com/cferdinandi/4f8a0e17921c5b46e6c4
      * Merge defaults with user options
@@ -34,18 +61,7 @@
      * @returns {Object} Merged values of defaults and options
      */
 
-    var requestAnimationFrame = window.requestAnimationFrame       ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        window.oRequestAnimationFrame      ||
-        window.msRequestAnimationFrame;
 
-
-    var cancelAnimationFrame = window.cancelAnimationFrame          ||
-        window.webkitCancelRequestAnimationFrame    ||
-        window.mozCancelRequestAnimationFrame       ||
-        window.oCancelRequestAnimationFrame         ||
-        window.msCancelRequestAnimationFrame;
 
     var extend = function (defaults, options) {
         var extended = {};
@@ -141,7 +157,6 @@
         var
             videoNode,
             imageNode,
-            imageClone,
             canvasLayerVisible,
             canvasLayerImage,
             canvasLayerVideo,
@@ -180,7 +195,7 @@
         if (options.videoPlaybackRate) {
             videoNode.playbackRate = options.videoPlaybackRate;
         }
-
+        console.log(videoNode.paused, videoNode.ended);
         /*
          * Set the image node
          */
@@ -214,7 +229,7 @@
             imageNode.crossOrigin = 'anonymous';
         }
 
-        imageClone = imageNode.cloneNode(true);
+
         canvasLayerVisible = createCanvasObject();
         canvasLayerImage   = createCanvasObject();
         canvasLayerVideo   = createCanvasObject();
@@ -223,28 +238,25 @@
 
         var animationFrameId;
         var rgbTransArray = options.transparentColor.split(/[\(\)]+/)[1].split(',').map(Number);
-        console.log(rgbTransArray, options.transparentColor);
-        var render = function () {
-            if (typeof options.videoCutoff === 'undefined') {
-                options.videoCutoff = videoNode.duration - 0.50;
-            }
-            if (videoNode.paused || videoNode.ended || videoNode.currentTime >= options.videoCutoff) {
-                cancelAnimationFrame(animationFrameId);
-                options.videoCallback(imageNode, canvasLayerVisible);
-                return false;
-            }
-            canvasLayerVideo.context.clearRect(0, 0, canvasLayerVideo.width, canvasLayerVideo.height);
-            canvasLayerVideo.context.drawImage(videoNode, canvasLayerVideo.x.start, canvasLayerVideo.y.start, canvasLayerVideo.x.end, canvasLayerVideo.y.end);
+
+        var drawImage = function () {
             if (options.transparent) {
                 canvasLayerImage.context.fillStyle = options.transparentColor;
                 canvasLayerImage.context.fillRect(0, 0, width, height);
             }
-            canvasLayerImage.context.drawImage(imageClone, canvasLayerImage.x.start, canvasLayerImage.y.start, canvasLayerImage.x.end, canvasLayerImage.y.end);
+            canvasLayerImage.context.drawImage(imageNode, canvasLayerImage.x.start, canvasLayerImage.y.start, canvasLayerImage.x.end, canvasLayerImage.y.end);
+        };
+
+        var render = function () {
+            canvasLayerVideo.context.drawImage(videoNode, canvasLayerVideo.x.start, canvasLayerVideo.y.start, canvasLayerVideo.x.end, canvasLayerVideo.y.end);
+            drawImage();
+
             var videoIdata = canvasLayerVideo.context.getImageData(0, 0, width, height),
                 videoData  = videoIdata.data,
                 imageIdata = canvasLayerImage.context.getImageData(0, 0, width, height),
                 imageData  = imageIdata.data;
-            for (var i = 0; i < videoData.length; i += 4) {
+
+            for (var i = 0, len = videoData.length; i < len; i += 4) {
                 var r = videoData[i],
                     g = videoData[i + 1],
                     b = videoData[i + 2];
@@ -257,16 +269,12 @@
                         imageData[i + 3] = 0;
                     }
                 }
-
             }
-            imageIdata.data.set(imageData);
             canvasLayerImage.context.putImageData(imageIdata, 0, 0);
             canvasLayerVisible.context.clearRect(0, 0, width, height);
             canvasLayerVisible.context.drawImage(canvasLayerImage.canvas, 0, 0);
-            requestAnimationFrame(render);
         };
         var initialize = function () {
-
             /*
              * Get width and Height of parent element, which is the container for the canvas
              */
@@ -300,17 +308,13 @@
             canvasLayerVideo.setY(videoPosY.start, videoPosY.end);
             canvasLayerImage.setX(0, imageBox.width);
             canvasLayerImage.setY(0, imageBox.height);
-
-            if (options.autoPlay) {
-                setTimeout(function () {
-                    play();
-                }, options.timeout);
+            if (!videoNode.paused && !videoNode.ended) {
+                animationLoop();
             }
         };
 
         var colorToAlpha = function (r, g, b) {
-            //convert to luminosity greyscale
-            return Math.round((0.21 * r) + (0.72 * g) + (0.07 * b));
+            return (3 * r + 4 * g + b) >>> 3;
         };
         var play = function () {
             if (videoNode.paused || videoNode.ended) {
@@ -318,12 +322,34 @@
                 videoNode.play();
             }
         };
-        videoNode.addEventListener('play', function () {
-            requestAnimationFrame(render);
-        });
+        var videoPlayListener = function () {
+            if (typeof options.videoCutoff === 'undefined') {
+                options.videoCutoff = videoNode.duration - 0.50;
+            }
+            if (!animationFrameId) {
+                animationLoop();
+            }
+            videoNode.removeEventListener('play', videoPlayListener);
+        };
+        var videoCanPlayListener = function () {
+            console.log('canplay');
+            //play();
+        };
+        videoNode.addEventListener('play', videoPlayListener);
+        videoNode.addEventListener('canplay', videoCanPlayListener);
+        function animationLoop() {
+            if (videoNode.paused || videoNode.ended || videoNode.currentTime >= options.videoCutoff) {
+                cancelAnimationFrame(animationFrameId);
+                options.videoCallback(imageNode, canvasLayerVisible);
+                return false;
+            } else {
+                render();
+                animationFrameId = requestAnimationFrame(animationLoop);
+            }
+        }
 
-        if (!imageClone.complete) {
-            imageClone.addEventListener('load', function () {
+        if (!imageNode.complete) {
+            imageNode.addEventListener('load', function () {
                 initialize();
             });
         } else {
