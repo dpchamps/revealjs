@@ -195,7 +195,6 @@
         if (options.videoPlaybackRate) {
             videoNode.playbackRate = options.videoPlaybackRate;
         }
-        console.log(videoNode.paused, videoNode.ended);
         /*
          * Set the image node
          */
@@ -332,8 +331,9 @@
             videoNode.removeEventListener('play', videoPlayListener);
         };
         var videoCanPlayListener = function () {
+            console.log("can play");
             setTimeout(function () {
-                console.log("here");
+                console.log("here", videoNode.paused, videoNode.ended);
                 if (videoNode.paused || videoNode.ended) {
                     play();
                 }
