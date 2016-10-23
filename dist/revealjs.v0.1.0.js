@@ -195,6 +195,9 @@
         if (options.videoPlaybackRate) {
             videoNode.playbackRate = options.videoPlaybackRate;
         }
+        if (videoNode.autoplay) {
+            videoNode.removeAttribute('autoplay');
+        }
         /*
          * Set the image node
          */
