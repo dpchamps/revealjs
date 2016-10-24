@@ -1,4 +1,4 @@
-/*! revealjs - v0.1.0 - 2016-10-23
+/*! revealjs - v0.1.0 - 2016-10-24
 * http://www.youtube.com/watch?v=cDuG95DXbw8
 * Copyright (c) 2016 Obi-Wan Kenobi; Licensed  */
 // Uses AMD or browser globals to create a module.
@@ -60,9 +60,6 @@
      * @param {Object} options User options
      * @returns {Object} Merged values of defaults and options
      */
-
-
-
     var extend = function (defaults, options) {
         var extended = {};
         var prop;
@@ -170,13 +167,13 @@
         if (typeof parent === 'string') {
             parent = document.getElementById(parent);
         }
+
         /*
          *  Set the video node internally.
          *
          *  A video tag is required to be defined within the parent.
          *  The video source will be overidden if options.src is supplied
          */
-
         videoNode = firstChildByTag(parent, 'video');
         if (!videoNode) {
             throw new Error('Video node must appear in parent container.');
@@ -198,6 +195,7 @@
         if (videoNode.autoplay) {
             videoNode.removeAttribute('autoplay');
         }
+
         /*
          * Set the image node
          */
@@ -209,8 +207,6 @@
         if (options.imageSrc) {
             imageNode.src = options.imageSrc;
         }
-
-
 
         /*
          * If loading an image/video from a cdn, anticipate Access-Control-Allow-Origin : *
