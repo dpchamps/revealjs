@@ -118,7 +118,7 @@
         image.style.left = '0';
         image.style.display = 'block';
         image.style.opacity = '0';
-        image.style.transition = 'opacity 750ms ease-in 250ms';
+        //image.style.transition = 'opacity 750ms ease-in 250ms';
     };
     var setCanvasStyle = function (canvas) {
         canvas.style.position = 'absolute';
@@ -179,7 +179,7 @@
             throw new Error('Video node must appear in parent container.');
         }
         videoNode.style.display = 'none';
-        if (!options.videoSrc && !firstChildByTag(videoNode, 'source')) {
+        if (!options.videoSrc && !videoNode.getElementsByTagName('source')[0]) {
             throw new Error("Video node has no source.");
         }
         if (options.videoSrc) {
@@ -245,19 +245,24 @@
             canvasLayerImage.context.drawImage(imageNode, canvasLayerImage.x.start, canvasLayerImage.y.start, canvasLayerImage.x.end, canvasLayerImage.y.end);
         };
 
+        var videoIdata = null,
+            videoData  = null,
+            imageIdata = null,
+            imageData  = null;
         var render = function () {
             canvasLayerVideo.context.drawImage(videoNode, canvasLayerVideo.x.start, canvasLayerVideo.y.start, canvasLayerVideo.x.end, canvasLayerVideo.y.end);
             drawImage();
 
-            var videoIdata = canvasLayerVideo.context.getImageData(0, 0, width, height),
-                videoData  = videoIdata.data,
-                imageIdata = canvasLayerImage.context.getImageData(0, 0, width, height),
-                imageData  = imageIdata.data;
+            videoIdata = canvasLayerVideo.context.getImageData(0, 0, width, height);
+            videoData  = videoIdata.data;
+            imageIdata = canvasLayerImage.context.getImageData(0, 0, width, height);
+            imageData  = imageIdata.data;
 
             for (var i = 0, len = videoData.length; i < len; i += 4) {
                 var r = videoData[i],
                     g = videoData[i + 1],
                     b = videoData[i + 2];
+
 
                 imageData[i + 3] = colorToAlpha(r, g, b);
                 if (options.transparent) {
@@ -271,6 +276,9 @@
             canvasLayerImage.context.putImageData(imageIdata, 0, 0);
             canvasLayerVisible.context.clearRect(0, 0, width, height);
             canvasLayerVisible.context.drawImage(canvasLayerImage.canvas, 0, 0);
+
+            videoIdata = null;
+            imageIdata = null;
         };
         var initialize = function () {
             /*
@@ -323,6 +331,7 @@
             if (videoNode.paused || videoNode.ended) {
                 videoNode.currentTime = 0;
                 videoNode.play();
+                animationLoop();
             }
         };
         var videoPlayListener = function () {
