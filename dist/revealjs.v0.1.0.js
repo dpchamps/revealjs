@@ -335,9 +335,10 @@
             if (videoNode.paused || videoNode.ended) {
                 videoNode.currentTime = 0;
                 var videoPromise = videoNode.play();
-alert(videoPromise);
+                alert(videoPromise);
                 if(videoPromise !== 'undefined'){
                     videoPromise.then(function(){
+                        alert('playing');
                         if (typeof options.videoCutoff === 'undefined') {
                             options.videoCutoff = videoNode.duration - 0.50;
                         }
@@ -345,6 +346,7 @@ alert(videoPromise);
                             animationLoop();
                         }
                     }).catch(function(){
+                        alert("caught");
                         fallback();
                     });
                 }
