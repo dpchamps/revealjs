@@ -337,9 +337,9 @@
                 var videoPromise = videoNode.play();
                 alert(videoPromise);
                 if(videoPromise !== 'undefined'){
+                    alert('Enters block');
                     videoPromise.then(function(){
                         alert('playing');
-                        alert('cache test');
                         if (typeof options.videoCutoff === 'undefined') {
                             options.videoCutoff = videoNode.duration - 0.50;
                         }
