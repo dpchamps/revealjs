@@ -372,6 +372,7 @@
                 options.videoCallback(imageNode, canvasLayerVisible);
                 return false;
             } else {
+                alert('rendering');
                 render();
                 animationFrameId = requestAnimationFrame(animationLoop);
             }
