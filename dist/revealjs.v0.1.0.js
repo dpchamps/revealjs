@@ -372,7 +372,7 @@
                 options.videoCallback(imageNode, canvasLayerVisible);
                 return false;
             } else {
-                alert('rendering' + videoNode.currentTime + (!this.paused && !this.ended && this.readyState > 2));
+                alert('rendering' + videoNode.currentTime + (!videoNode.paused && !videoNode.ended && videoNode.readyState > 2));
                 render();
                 animationFrameId = requestAnimationFrame(animationLoop);
             }
