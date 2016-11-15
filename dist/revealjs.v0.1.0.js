@@ -347,11 +347,9 @@
                             if (!animationFrameId) {
                                 animationLoop();
                             }
-                        }, function(){
+                        }).catch(function(){
                             alert("caught");
                             fallback();
-                        }).catch(function(){
-
                         });
                     setTimeout(function(){
                         alert((videoNode.paused || videoNode.ended));
@@ -361,6 +359,10 @@
         };
         videoNode.addEventListener('play', function(){
             alert("playing!");
+            if (!animationFrameId) {
+                alert('animating!');
+                animationLoop();
+            }
         });
         function animationLoop() {
             if (videoNode.paused || videoNode.ended || videoNode.currentTime >= options.videoCutoff) {
