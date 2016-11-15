@@ -345,6 +345,7 @@
                                 options.videoCutoff = videoNode.duration - 0.50;
                             }
                             if (!animationFrameId) {
+                                alert('animating from promise');
                                 animationLoop();
                             }
                         }).catch(function(){
