@@ -118,7 +118,7 @@
         image.style.left = '0';
         image.style.display = 'block';
         image.style.opacity = '0';
-        image.style.transition = 'opacity 750ms ease-in 250ms';
+        image.style.transition = 'opacity 250ms ease-in 250ms';
     };
     var setCanvasStyle = function (canvas) {
         canvas.style.position = 'absolute';
@@ -350,7 +350,7 @@
                 }
             }
         };
-       
+
         function animationLoop() {
             if (videoNode.paused || videoNode.ended || videoNode.currentTime >= options.videoCutoff) {
                 cancelAnimationFrame(animationFrameId);
