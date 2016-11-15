@@ -337,19 +337,15 @@
                 var videoPromise = videoNode.play();
                 alert(videoPromise);
                 if(videoPromise !== 'undefined'){
-                    alert('Enters block');
                     videoPromise
                         .then(function(){
-                            alert('playing');
                             if (typeof options.videoCutoff === 'undefined') {
                                 options.videoCutoff = videoNode.duration - 0.50;
                             }
                             if (!animationFrameId) {
-                                alert('animating from promise');
                                 animationLoop();
                             }
                         }).catch(function(){
-                            alert("caught");
                             fallback();
                         });
                     setTimeout(function(){
@@ -359,20 +355,16 @@
             }
         };
         videoNode.addEventListener('play', function(){
-            alert("playing!");
             if (!animationFrameId) {
-                alert('animating!');
                 animationLoop();
             }
         });
         function animationLoop() {
             if (videoNode.readyState < 1 ||videoNode.paused || videoNode.ended || videoNode.currentTime >= options.videoCutoff) {
-                alert("animation loop ended");
                 cancelAnimationFrame(animationFrameId);
                 options.videoCallback(imageNode, canvasLayerVisible);
                 return false;
             } else {
-                alert('rendering' + videoNode.currentTime + videoNode.readyState + (!videoNode.paused && !videoNode.ended && videoNode.readyState > 2));
                 render();
                 animationFrameId = requestAnimationFrame(animationLoop);
             }
