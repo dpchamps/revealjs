@@ -359,7 +359,9 @@
                 }
             }
         };
-
+        videoNode.addEventListener('play', function(){
+            alert("playing!");
+        });
         function animationLoop() {
             if (videoNode.paused || videoNode.ended || videoNode.currentTime >= options.videoCutoff) {
                 cancelAnimationFrame(animationFrameId);
