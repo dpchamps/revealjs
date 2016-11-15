@@ -335,7 +335,6 @@
             if (videoNode.paused || videoNode.ended) {
                 videoNode.currentTime = 0;
                 var videoPromise = videoNode.play();
-                alert(videoPromise);
                 if(videoPromise !== 'undefined'){
                     videoPromise
                         .then(function(){
@@ -349,7 +348,6 @@
                             fallback();
                         });
                     setTimeout(function(){
-                        alert((videoNode.paused || videoNode.ended));
                     },options.timeout);
                 }
             }
