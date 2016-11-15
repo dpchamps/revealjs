@@ -335,7 +335,7 @@
             if (videoNode.paused || videoNode.ended) {
                 videoNode.currentTime = 0;
                 var videoPromise = videoNode.play();
-
+alert(videoPromise);
                 if(videoPromise !== 'undefined'){
                     videoPromise.then(function(){
                         if (typeof options.videoCutoff === 'undefined') {
