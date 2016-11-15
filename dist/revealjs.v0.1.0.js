@@ -338,18 +338,21 @@
                 alert(videoPromise);
                 if(videoPromise !== 'undefined'){
                     alert('Enters block');
-                    videoPromise.then(function(){
-                        alert('playing');
-                        if (typeof options.videoCutoff === 'undefined') {
-                            options.videoCutoff = videoNode.duration - 0.50;
-                        }
-                        if (!animationFrameId) {
-                            animationLoop();
-                        }
-                    }).catch(function(){
-                        alert("caught");
-                        fallback();
-                    });
+                    videoPromise
+                        .then(function(){
+                            alert('playing');
+                            if (typeof options.videoCutoff === 'undefined') {
+                                options.videoCutoff = videoNode.duration - 0.50;
+                            }
+                            if (!animationFrameId) {
+                                animationLoop();
+                            }
+                        }, function(){
+                            alert("caught");
+                            fallback();
+                        }).catch(function(){
+
+                        });
                 }
             }
         };
