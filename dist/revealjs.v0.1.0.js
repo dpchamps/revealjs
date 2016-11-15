@@ -353,6 +353,9 @@
                         }).catch(function(){
 
                         });
+                    setTimeout(function(){
+                        alert((videoNode.paused || videoNode.ended));
+                    },options.timeout);
                 }
             }
         };
